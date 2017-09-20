@@ -1,0 +1,57 @@
+[
+	{
+		"question" : "Select your state..",
+		"answers"	: [
+					{"id" : 0, "text" : "61701"},
+					{"id" : 1, "text" : "61702"},
+					{"id" : 2, "text" : "61703"},
+					{"id" : 3, "text" : "61705"}		
+				  ],
+				  "correct" : 3
+	},
+	{
+		"question" : "Do you own your car?",
+		"answers"  : [
+			{"id"  : 0, "text" : "Yes" },
+			{"id"  : 1, "text" : "No, it's financed" },
+			{"id"  : 2, "text" : "No, it's leased" },
+			{"id"  : 3, "text" : "Car pooled" }
+			],
+		"correct"  : 2
+	},
+	{
+		"question" : "Is your car less than 1 year old?",
+		"answers"  : [
+			{"id"  : 0, "text" : "Yes, it's brand new"},
+			{"id"  : 1, "text" : "No"}
+		],
+		"correct"  : 0
+	},
+	{
+		"question" : "Do you want the lowest possible rates or the best protection?",
+		"answers"  : [
+			{"id"  : 0, "text" : "Lowest Rates"},
+			{"id"  : 1, "text" : "Best Protection"}
+		],
+		"correct"  : 1
+	},
+	{
+		"question" : "What is your net worth?",
+		"answers"  : [
+			{"id"  : 0, "text" : "Less than $25k"},
+			{"id"  : 1, "text" : "$25,000 - $50,000"},
+			{"id"  : 2, "text" : "$50,000 - $100,000"},
+			{"id"  : 3, "text" : "More than $100,000"}
+		],
+		"correct"  : 0
+	},
+	{
+		"question" : "Do you and your frequent passengers have health insurance?",
+		"answers"  : [
+			{"id"  : 0, "text" : "Yes"},
+			{"id"  : 1, "text" : "No"}
+		],
+		"correct"  : 1
+	}
+
+]

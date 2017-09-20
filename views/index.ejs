@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html ng-app="myQuiz">
+	<head>
+		<title>Auto Insurance Advisor</title>
+		<link rel="stylesheet" href="/stylesheets/quiz.css">
+	</head>
+	
+	<body>
+
+		<div ng-view></div>
+
+		<script	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.min.js"></script>
+		<script	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular-route.min.js"></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
+
+		<script type="text/ng-template" id="/quiz.html">	
+    		<div id="myQuiz">
+				<h1><b> AUTO INSURANCE COVERAGE</b><span>ADVISOR</span></h1>
+				<div class ="progress">	
+					<div class= "{{ ($index === activeQuestion) ? 'on' : 'off' }}
+						{{(myQuestion.questionState === 'answered') ? 'answered' : 'unanswered'}}
+						{{(myQuestion.correctness === 'correct') ? 'correct' : 'correct'}}
+						" ng-repeat = "myQuestion in myQuestions">
+					</div>
+				</div>
+
+				<div class ="intro {{ (activeQuestion > -1) ? 'inactive' : 'active' }}">	
+					<h2>Welcome</h2>
+					<br></br>
+					<p>Not all car insurance coverage is the same.Many people overpay for coverages they don't need, while others don't have enough coverage but don't know 
+			 			until its too late.</p>
+					<p>This tool will help you decide what coverage options you need.</p>
+					<p>It will make shopping around for the best insurance rates a lot easier, and it only takes two minutes.</p>
+					<p class="btn" ng-click="activeQuestion = 0">Begin</p>	
+			
+					
+				</div>
+			
+				<div class ="question 
+					{{$index === activeQuestion ? 'active' : 'inactive' }}
+					{{myQuestion.questionState === 'answered' ? 'answered' : 'unanswered' }}			
+					"ng-repeat = "myQuestion in myQuestions">
+					<p class="txt">{{myQuestion.question}}</p>
+										
+					<p class="ans"	ng-hide="$parent.$index == 0" ng-class = "{ selected:isSelected($parent.$index,$index) }"
+			 			ng-click = "selectAnswer($parent.$index,$index)"
+			 			ng-repeat = "Answer in myQuestions[$index].answers">{{Answer.text}}
+					</p>
+					
+					
+					<div id="regions_div" ng-click="selectAnswer(0,0)" ></div>
+					
+			
+					<div class="feedback">
+						<div class="btn" ng-click="selectContinue()">Next</div>
+					</div>
+					
+					<!-- <div class="ann">
+						<img src="/images/ann.png">
+					</div> -->
+				</div>
+
+				<div class ="results {{(totalQuestions === activeQuestion) ? 'active' : 'inactive'}}">
+					<h3>BEST COVERAGE OPTIONS</h3>
+					<h4>We recommend these coverage options and limits :</h4>
+					<table>
+  						<tr>
+    						<th><b>COVERAGE TYPE</b></th>
+	    					<th><b>LIMIT</b></th>				
+  						</tr>	
+  						<tr>
+		    				<td>Bodily injury liability</td>
+    						<td>$250,000 per person / $500,000 per accident</td>
+    					</tr>	
+  						<tr>
+		    				<td>Property damage liability</td>
+    						<td>$100,000 per accident</td>
+  						</tr>		
+  						<tr>
+	    					<td>Uninsured/Underinsured Motorist bodily injury</td>
+		    				<td>$250,000 per person / $500,000 per person</td>    				
+  						</tr>
+  						<tr>
+	    					<td>Umbrella liability policy</td>
+    						<td>$1,000,000 per person</td>    				
+  						</tr>
+  						<tr>	
+    						<td>Comprehensive and collision</td>
+    						<td>$500 deductible</td>    				
+  						</tr>
+  						<tr>
+		    				<td>Medical payments (MedPay)</td>
+    						<td>$5,000</td>    				
+  						</tr>	
+					</table>						
+				</div>
+			</div>
+		</script>
+
+		<script>
+			angular.module('myQuiz', ['ngRoute'])
+        
+        	//---------------
+	        // Controllers
+	        //---------------
+	        .controller('QuizController', ['$scope','$http', function($scope,$http) {
+				$scope.score = 0;
+				$scope.activeQuestion = -1;
+				$scope.activeQuestionAnswered = 0;
+				$scope.percentage = 0;
+	
+				$http.get('/javascripts/quiz_data.json').then(function(quizData){				
+					$scope.myQuestions = quizData.data;
+					$scope.totalQuestions = $scope.myQuestions.length;
+			
+				});
+	
+				$scope.selectAnswer = function(qIndex,aIndex){
+					
+					var questionState = $scope.myQuestions[qIndex].questionState;
+					if(questionState != 'answered'){
+						$scope.myQuestions[qIndex].selectedAnswer = aIndex;
+					/*  var correctAnswer = $scope.myQuestions[qIndex].correct;
+						$scope.myQuestions[qIndex].correctAnswer = correctAnswer;
+						
+						if(aIndex === correctAnswer){
+							$scope.myQuestions[qIndex].correctness = 'correct';
+							$scope.score +=1;
+						}else {
+							$scope.myQuestions[qIndex].correctness = 'incorrect';	
+						}*/																// Not Required
+						
+						
+						$scope.myQuestions[qIndex].questionState = 'answered';
+					}					
+				/*alert(($scope.myQuestions[qIndex].selectedAnswer).txt);*/
+			}
+	
+			$scope.isSelected = function(qIndex,aIndex){
+				return $scope.myQuestions[qIndex].selectedAnswer === aIndex;
+			}
+	
+			/*$scope.isCorrect = function(qIndex,aIndex){
+				return $scope.myQuestions[qIndex].correctAnswer === aIndex;
+			}*/
+	
+			$scope.selectContinue =  function(){
+				return $scope.activeQuestion += 1;
+				
+			}
+
+			//
+			google.charts.load('current', {'packages':['geochart']});
+      google.charts.setOnLoadCallback(drawRegionsMap);
+
+    function drawRegionsMap() {
+      var data = google.visualization.arrayToDataTable([
+        ['Country', 'Code'],
+    ['Alabama', 0],
+['Alaska', 1],
+['American Samoa', 2],
+['Arizona', 3],
+['Arkansas', 4],
+['California', 5],
+['Colorado', 6],
+['Connecticut', 7],
+['Delaware', 8],
+['District of Columbia', 9],
+['Florida', 0],
+['Georgia', 1],
+['Guam', 2],
+['Hawaii',3],
+['Idaho', 4],
+['Illinois', 5],
+['Indiana', 6],
+['Iowa', 7],
+['Kansas', 8],
+['Kentucky', 9],
+['Louisiana', 0],
+['Maine', 1],
+['Maryland', 2],
+['Massachusetts', 3],
+['Michigan', 4],
+['Minnesota', 5],
+['Mississippi', 6],
+['Missouri', 7],
+['Montana', 8],
+['Nebraska', 9],
+['Nevada', 0],
+['New Hampshire', 1],
+['New Jersey', 2],
+['New Mexico', 3],
+['New York', 4],
+['North Carolina', 5],
+['North Dakota', 6],
+['Northern Marianas Islands', 7],
+['Ohio', 8],
+['Oklahoma', 9],
+['Oregon', 0],
+['Pennsylvania', 1],
+['Puerto Rico', 2],
+['Rhode Island', 3],
+['South Carolina', 4],
+['South Dakota', 5],
+['Tennessee', 6],
+['Texas', 7],
+['Utah', 8],
+['Vermont', 9],
+['Virginia', 0],
+['Virgin Islands', 1],
+['Washington', 2],
+['West Virginia', 3],
+['Wisconsin', 4],
+['Wyoming', 5]
+      ]);
+
+      var options = {width: 556, height: 347};
+    options['region'] = 'US';
+    options['resolution'] = 'provinces';
+	options['backgroundColor'] = 'black';
+	options['legend'] = 'none';
+	options['keepAspectRatio'] = true;
+	options['height'] = '150px';
+    options['colors'] = ['#4bb5f3', '#FADC41', '#c44949', '#d74a12', '#0e9a0e', '#55c2ac', '#7c4b91', '#fadc41', '#0d6cca', '#7c4897'];
+
+      
+      var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+      chart.draw(data, options);
+    };
+
+        }])
+		
+		//---------------
+        // Routes
+        //---------------
+        .config(['$routeProvider', function ($routeProvider) {
+          	$routeProvider
+	            .when('/', {
+	              	templateUrl: '/quiz.html',
+	              	controller: 'QuizController'
+	            });
+			}]);
+    	</script>
+	</body>
+</html>
